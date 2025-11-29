@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useUser } from "../context/UserContext";
 import CreateCharacterForm from "./CreateCharacterForm";
+import EditCharacterForm from "./EditCharacterForm";
 
 interface Character {
   id: number;
@@ -18,6 +19,7 @@ export default function CharacterSheets() {
   const { user, setUserPartial } = useUser();
 
   const [characters, setCharacters] = useState<Character[]>([]);
+  const [editingCharacter, setEditingCharacter] = useState<Character | null>(null);
 
   const handleSelect = (characterId: number, characterName: string) => {
     const idStr = String(characterId);
@@ -50,6 +52,7 @@ export default function CharacterSheets() {
   }, [user]);
 
   return (
+    <>
     <div className="flex min-h-screen bg-gradient-to-b from-purple-900 via-indigo-900 to-black">
       <main className="flex flex-col w-full p-6 gap-6" aria-label="Character sheets page">
         <div className="mb-4">
@@ -142,6 +145,7 @@ export default function CharacterSheets() {
                   </button>
 
                   <button
+                    onClick={() => setEditingCharacter(character)}
                     className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-lg font-serif font-bold transition-all focus:outline-none focus:ring-2 focus:ring-purple-300"
                     aria-label={`Edit ${character.name}`}
                   >
@@ -156,5 +160,39 @@ export default function CharacterSheets() {
         {/* (Create form is above) */}
       </main>
     </div>
+    {editingCharacter ? (
+      <EditCharacterForm
+        initial={editingCharacter!}
+        onCancel={() => setEditingCharacter(null)}
+        onSave={async (updated) => {
+          try {
+            const id = editingCharacter!.id;
+            const url = `http://${process.env.NEXT_PUBLIC_API_URL}/character-sheets/${id}`;
+            const resp = await fetch(url, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(updated),
+            });
+
+            if (!resp.ok) throw new Error(`Server responded ${resp.status}`);
+
+            const saved = await resp.json();
+
+            setCharacters((prev) => prev.map((c) => (c.id === saved.id ? saved : c)));
+
+            // if the edited character is currently selected, update its name in context
+            if (user?.characterId === String(saved.id)) {
+              setUserPartial({ characterName: saved.name });
+            }
+          } catch (err) {
+            console.error('Error saving character:', err);
+            throw err;
+          } finally {
+            setEditingCharacter(null);
+          }
+        }}
+      />
+    ) : null}
+    </>
   );
 }

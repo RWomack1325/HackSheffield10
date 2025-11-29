@@ -72,3 +72,14 @@ def create_character_sheet():
     new_character['id'] = len(characters) + 1
     characters.append(new_character)
     return jsonify(new_character), 201
+
+
+@app.put("/character-sheets/<int:char_id>")
+def update_character_sheet(char_id):
+    updated = request.json
+    for i, c in enumerate(characters):
+        if c.get('id') == char_id:
+            # update only provided fields
+            characters[i] = {**c, **updated, 'id': char_id}
+            return jsonify(characters[i]), 200
+    return jsonify({"error": "Character not found"}), 404
