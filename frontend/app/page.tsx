@@ -1,21 +1,37 @@
+'use client';
+
+import { useState } from 'react';
+import MessagesBox from './components/MessagesBox';
+
+interface Message {
+  id: number;
+  text: string;
+  sender: 'user' | 'bot';
+  timestamp: Date;
+}
+
 export default function Home() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 1,
+      text: 'Hello! How can I help you today?',
+      sender: 'bot',
+      timestamp: new Date(),
+    },
+    {
+      id: 2,
+      text: 'I need some assistance with my project.',
+      sender: 'user',
+      timestamp: new Date(),
+    },
+  ]);
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-black">
       <main className="flex flex-col w-full h-screen p-6 gap-6">
         {/* Top section with Messages and Image side by side */}
         <div className="flex gap-6 flex-1">
-          {/* Messages Box */}
-          <div className="flex-1 bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 overflow-y-auto border border-gray-200 dark:border-gray-700">
-            <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">Messages</h2>
-            <div className="space-y-3">
-              <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded text-black dark:text-white">
-                <p>Hello! How can I help you today?</p>
-              </div>
-              <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded text-black dark:text-white ml-auto w-2/3">
-                <p>I need some assistance with my project.</p>
-              </div>
-            </div>
-          </div>
+          {/* Messages Component */}
+          <MessagesBox messages={messages} />
 
           {/* Image Box */}
           <div className="flex-1 bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 flex items-center justify-center border border-gray-200 dark:border-gray-700">
