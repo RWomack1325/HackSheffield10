@@ -23,18 +23,28 @@ export default function Home() {
     }
   }, [user, isLoading, router]);
 
-  function sendMessage(messageText: string) {
+  async function sendMessage(messageText: string) {
+    if (!messageText || !messageText.trim()) return;
 
-    messages.push({
-      id: messages.length + 1,
-      text: messageText,
-      sender: 'user',
-    });
+    try {
+      const url = `http://${process.env.NEXT_PUBLIC_API_URL}/messages`;
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: messageText,
+          sender_id: user?.userId ?? null,
+        }),
+      });
 
-    setMessages([...messages]);
+      if (!resp.ok) throw new Error(`Server responded ${resp.status}`);
 
-    setCurrentMessage('');
-
+      const saved = await resp.json();
+      setMessages((prev) => [...prev, saved]);
+      setCurrentMessage('');
+    } catch (err) {
+      console.error('Failed to send message', err);
+    }
   }
 
   const [currentMessage, setCurrentMessage] = useState<string>('');
@@ -43,18 +53,7 @@ export default function Home() {
     setCurrentMessage(event.target.value);
   }
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      text: 'Hello! How can I help you today?',
-      sender: 'bot',
-    },
-    {
-      id: 2,
-      text: 'I need some assistance with my project.',
-      sender: 'user',
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
     // Fetch messages from backend API
@@ -63,6 +62,11 @@ export default function Home() {
         const url = `http://${process.env.NEXT_PUBLIC_API_URL}/messages`;
         const response = await fetch(url);
         const data = await response.json();
+
+        data.map((msg: any) => {
+          msg.sender = msg.sender_id === user?.userId ? 'user' : 'bot';
+          return msg;
+        });
         setMessages(data);
       } catch (error) {
         console.error('Error fetching messages:', error);
@@ -70,14 +74,14 @@ export default function Home() {
     };
 
     fetchMessages();
-  }, []);
+  }, [user]);
 
 
   return (
     <div className="flex min-h-screen bg-gradient-to-b from-purple-900 via-indigo-900 to-black">
       <main className="flex flex-col w-full h-screen p-6 gap-6" aria-label="Main chat interface">
         {/* Top section with Messages and Image side by side */}
-        <div className="flex gap-6 flex-1" role="region" aria-label="Messages and vision display">
+        <div className="flex gap-6 flex-1 min-h-0" role="region" aria-label="Messages and vision display">
           {/* Messages Component */}
           <MessagesBox messages={messages} />
 

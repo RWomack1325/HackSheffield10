@@ -16,7 +16,7 @@ interface MessagesBoxProps {
 export default function MessagesBox({ messages }: MessagesBoxProps) {
 
   return (
-    <div className="flex-1 bg-gradient-to-br from-purple-800 to-indigo-900 rounded-lg shadow-lg p-6 overflow-y-auto border-2 border-purple-500 flex flex-col" role="region" aria-label="Message history">
+    <div className="flex-1 min-h-0 bg-gradient-to-br from-purple-800 to-indigo-900 rounded-lg shadow-lg p-6 overflow-y-auto border-2 border-purple-500 flex flex-col" role="region" aria-label="Message history">
       <h2 className="text-xl font-serif font-bold mb-4 text-purple-100" id="messages-heading">
         Messages
       </h2>
