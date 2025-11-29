@@ -16,22 +16,24 @@ interface MessagesBoxProps {
 export default function MessagesBox({ messages }: MessagesBoxProps) {
 
   return (
-    <div className="flex-1 bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 overflow-y-auto border border-gray-200 dark:border-gray-700 flex flex-col">
-      <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">
+    <div className="flex-1 bg-gradient-to-br from-purple-800 to-indigo-900 rounded-lg shadow-lg p-6 overflow-y-auto border-2 border-purple-500 flex flex-col" role="region" aria-label="Message history">
+      <h2 className="text-xl font-serif font-bold mb-4 text-purple-100" id="messages-heading">
         Messages
       </h2>
-      <div className="space-y-3 flex-1 overflow-y-auto mb-4">
+      <div className="space-y-3 flex-1 overflow-y-auto mb-4" role="log" aria-labelledby="messages-heading" aria-live="polite" aria-atomic="false">
         {messages.map((message) => (
           <div
             key={message.id}
             className={`p-3 rounded ${
               message.sender === 'bot'
-                ? 'bg-blue-100 dark:bg-blue-900 text-black dark:text-white'
-                : 'bg-gray-100 dark:bg-gray-800 text-black dark:text-white ml-auto w-2/3'
+                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-purple-50 border-l-4 border-purple-300'
+                : 'bg-gradient-to-r from-purple-600 to-pink-600 text-purple-50 ml-auto w-2/3 border-r-4 border-pink-300'
             }`}
+            role="article"
+            aria-label={`Message from ${message.sender === 'bot' ? 'assistant' : 'you'} at ${message.timestamp.toLocaleTimeString()}`}
           >
-            <p>{message.text}</p>
-            <span className="text-xs opacity-70 mt-1 block">
+            <p className="font-serif text-base leading-relaxed">{message.text}</p>
+            <span className="text-xs opacity-70 mt-1 block" aria-label="Timestamp">
               {message.timestamp.toLocaleTimeString()}
             </span>
           </div>
