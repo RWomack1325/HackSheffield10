@@ -6,7 +6,7 @@ interface Message {
   id: number;
   text: string;
   sender: 'user' | 'bot';
-  timestamp: Date;
+  timestamp?: Date;
 }
 
 interface MessagesBoxProps {
@@ -30,12 +30,9 @@ export default function MessagesBox({ messages }: MessagesBoxProps) {
                 : 'bg-gradient-to-r from-purple-600 to-pink-600 text-purple-50 ml-auto w-2/3 border-r-4 border-pink-300'
             }`}
             role="article"
-            aria-label={`Message from ${message.sender === 'bot' ? 'assistant' : 'you'} at ${message.timestamp.toLocaleTimeString()}`}
+            aria-label={`Message from ${message.sender === 'bot' ? 'assistant' : 'you'}`}
           >
             <p className="font-serif text-base leading-relaxed">{message.text}</p>
-            <span className="text-xs opacity-70 mt-1 block" aria-label="Timestamp">
-              {message.timestamp.toLocaleTimeString()}
-            </span>
           </div>
         ))}
       </div>

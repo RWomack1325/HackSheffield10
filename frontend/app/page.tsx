@@ -7,22 +7,41 @@ interface Message {
   id: number;
   text: string;
   sender: 'user' | 'bot';
-  timestamp: Date;
+  timestamp?: Date;
 }
 
 export default function Home() {
+
+  function sendMessage(messageText: string) {
+
+    messages.push({
+      id: messages.length + 1,
+      text: messageText,
+      sender: 'user',
+    });
+
+    setMessages([...messages]);
+
+    setCurrentMessage('');
+
+  }
+
+  const [currentMessage, setCurrentMessage] = useState<string>('');
+
+  const handleMessage = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setCurrentMessage(event.target.value);
+  }
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
       text: 'Hello! How can I help you today?',
       sender: 'bot',
-      timestamp: new Date(),
     },
     {
       id: 2,
       text: 'I need some assistance with my project.',
       sender: 'user',
-      timestamp: new Date(),
     },
   ]);
   return (
@@ -49,10 +68,13 @@ export default function Home() {
               placeholder="Type your message..."
               aria-label="Message input field"
               className="flex-1 px-4 py-3 border-2 border-purple-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300 focus:ring-opacity-75 bg-purple-900 text-white placeholder-purple-300 font-serif"
+              value={currentMessage}
+              onChange={(event) => handleMessage(event)}
             />
             <button 
               className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-lg font-serif font-bold transition-all focus:outline-none focus:ring-2 focus:ring-purple-300"
               aria-label="Send message button"
+              onClick={() => sendMessage(currentMessage)}
             >
               Send
             </button>
