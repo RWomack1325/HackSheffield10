@@ -5,6 +5,8 @@ from flask import request
 
 ### Data
 
+campaign = {}
+
 messages = []
 
 characters = [
@@ -45,19 +47,22 @@ def send_messages():
     messages.append(new_message)
     return jsonify(new_message), 201
 
-@app.post("/campaign")
-def create_campaign():
-    return "<p>campaign</p>"
-
 @app.get("/campaign")
 def join_campaign():
-    return "<p>Hello, World!</p>"
+    return jsonify(campaign)
+
+@app.post("/campaign")
+def create_campaign():
+    new_campaign = request.json
+    campaign["campaignCode"] = new_campaign["campaignCode"]
+    campaign["campaignName"] = new_campaign["campaignName"]
+
+    return jsonify(new_campaign), 201
 
 @app.get("/character-sheets")
 def get_character_sheets():
     return jsonify(characters)
     
-
 @app.post("/character-sheets")
 def create_character_sheet():
     new_character = request.json

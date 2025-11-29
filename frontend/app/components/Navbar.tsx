@@ -57,7 +57,16 @@ export default function Navbar() {
                 Character Sheets
               </Link>
             </li>
-            
+          
+            {/* User character */}
+            {user?.characterId && (
+              <li role="listitem" className="flex items-center gap-3 ml-4 pl-4 border-l-2 border-purple-500">
+                <span className="text-purple-200 font-serif text-sm">
+                  {user.characterName ? `Character: ${user.characterName}` : `Character ID: ${user.characterId}`}
+                </span>
+              </li>
+            )}
+
             {/* Campaign Info and Leave Button */}
             {user?.campaignCode && (
               <li role="listitem" className="flex items-center gap-3 ml-4 pl-4 border-l-2 border-purple-500">
@@ -71,15 +80,6 @@ export default function Navbar() {
                 >
                   Leave
                 </button>
-              </li>
-            )}
-            
-            {/* User character */}
-            {user?.characterId && (
-              <li role="listitem" className="flex items-center gap-3 ml-4 pl-4 border-l-2 border-purple-500">
-                <span className="text-purple-200 font-serif text-sm">
-                  {user.characterName ? `Character: ${user.characterName}` : `Character ID: ${user.characterId}`}
-                </span>
               </li>
             )}
           </ul>

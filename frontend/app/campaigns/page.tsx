@@ -12,7 +12,7 @@ export default function CampaignSelection() {
   const [showJoinForm, setShowJoinForm] = useState(false);
   const [error, setError] = useState<string>('');
 
-  const generateCampaignId = () => {
+  const generateCampaignCode = () => {
     return `campaign_${Date.now()}`;
   };
 
@@ -20,21 +20,40 @@ export default function CampaignSelection() {
     return `user_${Math.random().toString(36).substr(2, 9)}`;
   };
 
-  const handleStartCampaign = () => {
+  const handleStartCampaign = async () => {
     if (!campaignName.trim()) {
       setError('Please enter a campaign name');
       return;
     }
 
-    const campaignId = generateCampaignId();
+    const campaignCode = generateCampaignCode();
     const userId = user?.userId || generateUserId();
 
-    setUser({
+    try {
+      const url = `http://${process.env.NEXT_PUBLIC_API_URL}/campaign`;
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            campaignName,
+            campaignCode,
+        }),
+      });
+
+      if (!resp.ok) throw new Error(`Server responded ${resp.status}`);
+
+      setUser({
       userId,
       characterId: '', // Will be set when character is created
       campaignName,
-      campaignCode: campaignId,
+      campaignCode,
     });
+
+    } catch (err) {
+      console.error('Failed to send message', err);
+    }
+
+    
 
     router.push('/character-sheets');
   };
