@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useUser } from "../context/UserContext";
+import CreateCharacterForm from "./CreateCharacterForm";
 
 interface Character {
   id: number;
@@ -14,7 +14,6 @@ interface Character {
 }
 
 export default function CharacterSheets() {
-  const router = useRouter();
   const { user, setUserPartial } = useUser();
 
   const [characters, setCharacters] = useState<Character[]>([
@@ -37,14 +36,17 @@ export default function CharacterSheets() {
   ]);
 
   const handleSelect = (characterId: number, characterName: string) => {
-    setUserPartial({
-      characterId: String(characterId),
-      // also store a friendly name for quick UI
-      campaignName: user?.campaignName,
-    });
-    // set the characterId specifically
-    setUserPartial({ characterId: String(characterId) });
-    router.push('/');
+    const idStr = String(characterId);
+    const currentlySelected = user?.characterId === idStr;
+
+    if (currentlySelected) {
+      // clicking selected character will deselect it
+      setUserPartial({ characterId: '' });
+      return;
+    }
+
+    // set the selected character (allow switching later)
+    setUserPartial({ characterId: idStr, characterName });
   };
 
   return (
@@ -54,6 +56,13 @@ export default function CharacterSheets() {
           <h1 className="text-4xl font-serif font-bold text-purple-100">Character Sheets</h1>
           <p className="text-purple-300 font-serif mt-2">Manage your D&D characters</p>
         </div>
+
+        {/* Create form toggle and form */}
+        <CreateCharacterForm onCreate={(newChar) => {
+          setCharacters((prev) => [newChar, ...prev]);
+          // automatically select the newly created character
+          setUserPartial({ characterId: String(newChar.id), characterName: newChar.name });
+        }} />
 
         {/* Characters Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="list">
@@ -114,15 +123,7 @@ export default function CharacterSheets() {
           })}
         </div>
 
-        {/* Create New Character Button */}
-        <div className="mt-8 flex justify-center">
-          <button
-            className="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-lg font-serif font-bold text-lg transition-all focus:outline-none focus:ring-2 focus:ring-purple-300"
-            aria-label="Create a new character"
-          >
-            Create New Character
-          </button>
-        </div>
+        {/* (Create form is above) */}
       </main>
     </div>
   );

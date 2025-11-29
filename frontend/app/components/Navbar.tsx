@@ -75,13 +75,13 @@ export default function Navbar() {
             )}
             
             {/* User character */}
-              {user?.characterId && (
-                <li role="listitem" className="flex items-center gap-3 ml-4 pl-4 border-l-2 border-purple-500">
-                  <span className="text-purple-200 font-serif text-sm">
-                  {user.characterId ? `Current character: ${user.characterId}` : '.'}
+            {user?.characterId && (
+              <li role="listitem" className="flex items-center gap-3 ml-4 pl-4 border-l-2 border-purple-500">
+                <span className="text-purple-200 font-serif text-sm">
+                  {user.characterName ? `Character: ${user.characterName}` : `Character ID: ${user.characterId}`}
                 </span>
-                </li>
-              )}
+              </li>
+            )}
           </ul>
         </div>
       </div>

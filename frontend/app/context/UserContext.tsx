@@ -5,6 +5,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 interface UserData {
   userId: string;
   characterId: string;
+  characterName?: string;
   campaignName?: string;
   campaignCode?: string;
 }
