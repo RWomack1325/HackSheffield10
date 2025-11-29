@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import MessagesBox from './components/MessagesBox';
+import { useUser } from './context/UserContext';
 
 interface Message {
   id: number;
@@ -11,6 +13,15 @@ interface Message {
 }
 
 export default function Home() {
+  const router = useRouter();
+  const { user, isLoading } = useUser();
+
+  // Redirect to campaign selection if no campaign is set
+  useEffect(() => {
+    if (!isLoading && !user?.campaignCode) {
+      router.push('/campaigns');
+    }
+  }, [user, isLoading, router]);
 
   function sendMessage(messageText: string) {
 

@@ -5,7 +5,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 interface UserData {
   userId: string;
   characterId: string;
-  currentCampaignId: string;
+  campaignName?: string;
+  campaignCode?: string;
 }
 
 interface UserContextType {
