@@ -5,8 +5,26 @@ from flask import request
 
 ### Data
 
-messages = [
-  ]
+messages = []
+
+characters = [
+    {
+      "id": 1,
+      "name": "Aragorn the Ranger 21312312321",
+      "characterClass": "Ranger",
+      "race": "Human",
+      "level": 8,
+      "hp": 65,
+    },
+    {
+      "id": 2,
+      "name": "Elara Moonwhisper",
+      "characterClass": "Wizard",
+      "race": "Elf",
+      "level": 6,
+      "hp": 32,
+    }
+]
 
 app = Flask(__name__)
 CORS(app)
@@ -17,8 +35,7 @@ def hello_world():
 
 @app.get("/messages")
 def get_messages():
-    data = messages
-    return jsonify(data)
+    return jsonify(messages)
 
 @app.post("/messages")
 def send_messages():
@@ -38,9 +55,12 @@ def join_campaign():
 
 @app.get("/character-sheets")
 def get_character_sheets():
-    return "<p>character-sheets</p>"
+    return jsonify(characters)
     
 
 @app.post("/character-sheets")
 def create_character_sheet():
-    return "<p>Hello, World!</p>"
+    new_character = request.json
+    new_character['id'] = len(characters) + 1
+    characters.append(new_character)
+    return jsonify(new_character), 201

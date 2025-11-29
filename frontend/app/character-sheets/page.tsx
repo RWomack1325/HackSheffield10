@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "../context/UserContext";
 import CreateCharacterForm from "./CreateCharacterForm";
 
 interface Character {
   id: number;
   name: string;
-  class: string;
+  characterClass: string;
   race: string;
   level: number;
   hp: number;
@@ -16,24 +16,7 @@ interface Character {
 export default function CharacterSheets() {
   const { user, setUserPartial } = useUser();
 
-  const [characters, setCharacters] = useState<Character[]>([
-    {
-      id: 1,
-      name: "Aragorn the Ranger",
-      class: "Ranger",
-      race: "Human",
-      level: 8,
-      hp: 65,
-    },
-    {
-      id: 2,
-      name: "Elara Moonwhisper",
-      class: "Wizard",
-      race: "Elf",
-      level: 6,
-      hp: 32,
-    },
-  ]);
+  const [characters, setCharacters] = useState<Character[]>([]);
 
   const handleSelect = (characterId: number, characterName: string) => {
     const idStr = String(characterId);
@@ -49,6 +32,22 @@ export default function CharacterSheets() {
     setUserPartial({ characterId: idStr, characterName });
   };
 
+  useEffect(() => {
+    const fetchCharacters = async () => {
+      try {
+        const url = `http://${process.env.NEXT_PUBLIC_API_URL}/character-sheets`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        setCharacters(data);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
+
+    fetchCharacters();
+  }, [user]);
+
   return (
     <div className="flex min-h-screen bg-gradient-to-b from-purple-900 via-indigo-900 to-black">
       <main className="flex flex-col w-full p-6 gap-6" aria-label="Character sheets page">
@@ -58,10 +57,29 @@ export default function CharacterSheets() {
         </div>
 
         {/* Create form toggle and form */}
-        <CreateCharacterForm onCreate={(newChar) => {
-          setCharacters((prev) => [newChar, ...prev]);
+        <CreateCharacterForm onCreate={async (newChar) => {
+
+            const url = `http://${process.env.NEXT_PUBLIC_API_URL}/character-sheets`;
+            const resp = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: newChar.name,
+                    characterClass: newChar.characterClass,
+                    race: newChar.race,
+                    level: newChar.level,
+                    hp: newChar.hp,
+                    }),
+            });
+
+        if (!resp.ok) throw new Error(`Server responded ${resp.status}`);
+
+        const saved = await resp.json();
+          setCharacters((prev) => [saved, ...prev]);
+
+
           // automatically select the newly created character
-          setUserPartial({ characterId: String(newChar.id), characterName: newChar.name });
+          setUserPartial({ characterId: String(saved.id), characterName: saved.name });
         }} />
 
         {/* Characters Grid */}
@@ -83,7 +101,7 @@ export default function CharacterSheets() {
                 <div className="space-y-3 text-purple-200 font-serif">
                   <div className="flex justify-between items-center bg-purple-900/50 p-3 rounded">
                     <span className="font-semibold">Class:</span>
-                    <span className="text-purple-100">{character.class}</span>
+                    <span className="text-purple-100">{character.characterClass}</span>
                   </div>
 
                   <div className="flex justify-between items-center bg-purple-900/50 p-3 rounded">

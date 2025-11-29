@@ -5,7 +5,7 @@ import { useState } from "react";
 interface Character {
   id: number;
   name: string;
-  class: string;
+  characterClass: string;
   race: string;
   level: number;
   hp: number;
@@ -38,7 +38,7 @@ export default function CreateCharacterForm({ onCreate }: { onCreate: (c: Charac
     const newChar: Character = {
       id: Date.now(),
       name: name.trim(),
-      class: cls || "Adventurer",
+      characterClass: cls || "Adventurer",
       race: race || "Human",
       level: Math.max(1, Math.floor(level)),
       hp: Math.max(1, Math.floor(hp)),
