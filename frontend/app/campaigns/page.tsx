@@ -58,22 +58,42 @@ export default function CampaignSelection() {
     router.push('/character-sheets');
   };
 
-  const handleJoinCampaign = () => {
-    if (!campaignCode.trim()) {
+  const handleJoinCampaign = async () => {
+    if (!campaignName.trim()) {
       setError('Please enter a campaign code');
       return;
     }
 
     const userId = user?.userId || generateUserId();
 
-    // In a real app, you'd validate the campaign code with a backend
-    setUser({
-      userId,
-      characterId: '', // Will be set when character is created
-      campaignCode,
-    });
+    try {
+      const url = `http://${process.env.NEXT_PUBLIC_API_URL}/campaign?campaignName=${campaignName}`;
+      const resp = await fetch(url, {
+        method: 'GET',
+      });
 
-    router.push('/character-sheets');
+      if (!resp.ok) {
+        setError('Please enter a valid campaign name')
+        return;
+      }
+
+      const resp_json = await resp.json();
+
+      // In a real app, you'd validate the campaign code with a backend
+        setUser({
+        userId,
+        characterId: '', // Will be set when character is created
+        campaignCode: resp_json.campaignCode,
+        campaignName: resp_json.campaignName,
+        });
+
+        router.push('/character-sheets');
+    
+    } catch (err) {
+        console.error('Failed to join campaign', err);
+    }
+
+    
   };
 
   return (
@@ -154,14 +174,14 @@ export default function CampaignSelection() {
               </h2>
               <input
                 type="text"
-                placeholder="Enter campaign code..."
-                value={campaignCode}
+                placeholder="Enter campaign name..."
+                value={campaignName}
                 onChange={(e) => {
-                  setCampaignCode(e.target.value);
+                  setCampaignName(e.target.value);
                   setError('');
                 }}
                 className="w-full px-4 py-3 border-2 border-purple-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300 bg-purple-900 text-white placeholder-purple-300 font-serif"
-                aria-label="Campaign code input"
+                aria-label="Campaign name input"
               />
               <div className="flex gap-3">
                 <button
@@ -174,7 +194,7 @@ export default function CampaignSelection() {
                 <button
                   onClick={() => {
                     setShowJoinForm(false);
-                    setCampaignCode('');
+                    setCampaignName('');
                   }}
                   className="flex-1 px-6 py-3 bg-gray-600 hover:bg-gray-500 text-white rounded-lg font-serif font-bold transition-all focus:outline-none focus:ring-2 focus:ring-gray-300"
                   aria-label="Cancel join campaign button"

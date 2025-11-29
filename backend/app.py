@@ -31,10 +31,6 @@ characters = [
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
-
 @app.get("/messages")
 def get_messages():
     return jsonify(messages)
@@ -49,6 +45,13 @@ def send_messages():
 
 @app.get("/campaign")
 def join_campaign():
+
+
+    resCampaginName = request.args.get('campaignName')
+
+    if resCampaginName != campaign.get("campaignName"):
+        return jsonify({"error": "Invalid campaign name"}), 400
+
     return jsonify(campaign)
 
 @app.post("/campaign")
