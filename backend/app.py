@@ -5,16 +5,7 @@ from flask import request
 
 ### Data
 
-messages = [{
-      "id": 1,
-      "text": 'Hello! How can I help you today?',
-      "sender_id": '2',
-    },
-    {
-      "id": 2,
-      "text": 'I need some assistance with my project.',
-      "sender_id": '1',
-    },
+messages = [
   ]
 
 app = Flask(__name__)
@@ -33,6 +24,7 @@ def get_messages():
 def send_messages():
 
     new_message = request.json
+    new_message['id'] = len(messages) + 1
     messages.append(new_message)
     return jsonify(new_message), 201
 
