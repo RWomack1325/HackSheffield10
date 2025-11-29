@@ -34,6 +34,8 @@ export default function Home() {
         body: JSON.stringify({
           text: messageText,
           sender_id: user?.userId ?? null,
+          campaign_code: user?.campaignCode ?? null,
+          character_id: user?.characterId ?? null,
         }),
       });
 
