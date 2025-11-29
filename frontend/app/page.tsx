@@ -55,6 +55,24 @@ export default function Home() {
       sender: 'user',
     },
   ]);
+
+  useEffect(() => {
+    // Fetch messages from backend API
+    const fetchMessages = async () => {
+      try {
+        const url = `http://${process.env.NEXT_PUBLIC_API_URL}/messages`;
+        const response = await fetch(url);
+        const data = await response.json();
+        setMessages(data);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
+
+    fetchMessages();
+  }, []);
+
+
   return (
     <div className="flex min-h-screen bg-gradient-to-b from-purple-900 via-indigo-900 to-black">
       <main className="flex flex-col w-full h-screen p-6 gap-6" aria-label="Main chat interface">
