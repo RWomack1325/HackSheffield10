@@ -12,6 +12,7 @@ interface UserData {
 interface UserContextType {
   user: UserData | null;
   setUser: (user: UserData) => void;
+  setUserPartial: (patch: Partial<UserData>) => void;
   clearUser: () => void;
   isLoading: boolean;
 }
@@ -47,6 +48,18 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const setUserPartial = (patch: Partial<UserData>) => {
+    setUserState((prev) => {
+      const next = { ...(prev || {}), ...patch } as UserData;
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      } catch (error) {
+        console.error('Error saving partial user to localStorage:', error);
+      }
+      return next;
+    });
+  };
+
   const clearUser = () => {
     setUserState(null);
     try {
@@ -57,7 +70,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser, clearUser, isLoading }}>
+    <UserContext.Provider value={{ user, setUser, setUserPartial, clearUser, isLoading }}>
       {children}
     </UserContext.Provider>
   );
