@@ -11,6 +11,7 @@ interface Character {
   race: string;
   level: number;
   hp: number;
+  backstory: string;
 }
 
 export default function CharacterSheets() {
@@ -69,6 +70,7 @@ export default function CharacterSheets() {
                     race: newChar.race,
                     level: newChar.level,
                     hp: newChar.hp,
+                    backstory: newChar.backstory
                     }),
             });
 
@@ -117,6 +119,16 @@ export default function CharacterSheets() {
                   <div className="flex justify-between items-center bg-purple-900/50 p-3 rounded">
                     <span className="font-semibold">HP:</span>
                     <span className="text-red-400">{character.hp}</span>
+                  </div>
+
+                  <div className="bg-purple-900/50 p-3 rounded">
+                    <label className="font-semibold text-purple-100 block mb-2">Backstory</label>
+                    <div
+                      className="text-purple-200 text-sm leading-relaxed max-h-32 overflow-y-auto whitespace-pre-wrap p-2 rounded bg-purple-900/30"
+                      aria-label={`Backstory for ${character.name}`}
+                    >
+                      {character.backstory}
+                    </div>
                   </div>
                 </div>
 

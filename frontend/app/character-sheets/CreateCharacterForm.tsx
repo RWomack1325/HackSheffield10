@@ -9,6 +9,7 @@ interface Character {
   race: string;
   level: number;
   hp: number;
+  backstory: string;
 }
 
 export default function CreateCharacterForm({ onCreate }: { onCreate: (c: Character) => void }) {
@@ -18,6 +19,7 @@ export default function CreateCharacterForm({ onCreate }: { onCreate: (c: Charac
   const [race, setRace] = useState("");
   const [level, setLevel] = useState<number>(1);
   const [hp, setHp] = useState<number>(10);
+  const [backstory, setBackstory] = useState("");
   const [error, setError] = useState("");
 
   const reset = () => {
@@ -35,6 +37,10 @@ export default function CreateCharacterForm({ onCreate }: { onCreate: (c: Charac
       setError("Please enter a character name.");
       return;
     }
+    if (!backstory.trim()) {
+      setError("Please enter a character backstory.");
+      return;
+    }
     const newChar: Character = {
       id: Date.now(),
       name: name.trim(),
@@ -42,6 +48,7 @@ export default function CreateCharacterForm({ onCreate }: { onCreate: (c: Charac
       race: race || "Human",
       level: Math.max(1, Math.floor(level)),
       hp: Math.max(1, Math.floor(hp)),
+      backstory: backstory.trim()
     };
     onCreate(newChar);
     reset();
@@ -83,7 +90,10 @@ export default function CreateCharacterForm({ onCreate }: { onCreate: (c: Charac
               <input type="number" value={hp} onChange={(e) => setHp(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded bg-purple-900 text-white" min={1} />
             </label>
           </div>
-
+            <label className="block mb-2">
+              <span className="text-purple-200">Backstory</span>
+              <textarea value={backstory} onChange={(e) => setBackstory(e.target.value)} className="w-full mt-1 px-3 py-2 rounded bg-purple-900 text-white multiline" />
+            </label>
           <div className="flex gap-3 mt-4">
             <button type="submit" className="flex-1 px-4 py-2 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-lg font-serif font-bold">Create & Select</button>
             <button type="button" onClick={() => { reset(); setOpen(false); }} className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-lg">Cancel</button>

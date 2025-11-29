@@ -12,11 +12,12 @@ messages = []
 characters = [
     {
       "id": 1,
-      "name": "Aragorn the Ranger 21312312321",
+      "name": "Aragorn the Ranger",
       "characterClass": "Ranger",
       "race": "Human",
       "level": 8,
       "hp": 65,
+      "backstory": "Aragorn, son of Arathorn, is the heir of Isildur and rightful king of Gondor. Raised in Rivendell, he is a skilled tracker and warrior, known for his bravery and leadership in the fight against Sauron."
     },
     {
       "id": 2,
@@ -25,6 +26,7 @@ characters = [
       "race": "Elf",
       "level": 6,
       "hp": 32,
+      "backstory": "Elara hails from the ancient elven city of Lothlórien. A prodigy in the arcane arts, she left her homeland to explore the wider world and uncover lost magical knowledge. Her calm demeanor hides a fierce determination to protect her friends."
     }
 ]
 
@@ -37,7 +39,6 @@ def get_messages():
 
 @app.post("/messages")
 def send_messages():
-
     new_message = request.json
     new_message['id'] = len(messages) + 1
     messages.append(new_message)
@@ -45,7 +46,6 @@ def send_messages():
 
 @app.get("/campaign")
 def join_campaign():
-
 
     resCampaginName = request.args.get('campaignName')
 
