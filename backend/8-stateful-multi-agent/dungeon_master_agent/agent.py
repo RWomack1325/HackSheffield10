@@ -6,26 +6,85 @@ from .sub_agents.combat_agent.agent import combat_agent
 from google.adk.tools.tool_context import ToolContext
 
 
-def update_location(new_location: str, location_features: list[str],
-tool_context: ToolContext)->dict:
+# def update_location(new_location: str, location_features: list[str],
+# tool_context: ToolContext)->dict:
 
 
-   tool_context.state["current_location"] = new_location
-   tool_context.state["location_features"][new_location] = location_features
-   return {
-         "action": "update_reminder",
-         "status": "new location",
-         "message": f"You've entered a new location welcome to {new_location}",
+#    tool_context.state["current_location"] = new_location
+#    tool_context.state["location_features"][new_location] = location_features
+#    return {
+#          "action": "update_reminder",
+#          "status": "new location",
+#          "message": f"You've entered a new location welcome to {new_location}",
+#       }
+
+# --- REVISED update_location TOOL ---
+
+def update_location(new_location: str, new_features: list[str], tool_context: ToolContext)->dict:
+      # 1. Update the current location (Top-level key update)
+      tool_context.state["current_location"] = new_location
+      
+      # 2. Get the main features dictionary
+      location_features_dict = tool_context.state.get("location_features", {})
+
+      # 3. Safely get the existing list of features for the new location,
+      #    or an empty list if this is a brand new location.
+      existing_features = location_features_dict.get(new_location, [])
+
+      # 4. Append the new features to the existing list
+         # Use extend() if new_features is a list, or append() if it's a single string.
+         # Since you define it as list[str], we use extend:
+      existing_features.extend(new_features) 
+
+      # 5. Update the dictionary with the combined list
+      location_features_dict[new_location] = existing_features
+      # 6. Ensure the top-level dictionary is saved back (optional, but good practice)
+      tool_context.state["location_features"] = location_features_dict
+
+      return {
+      "action": "update_reminder",
+      "status": "new location",
+      "message": f"You've entered a new location welcome to {new_location}",
       }
-def update_player_name(new_player: str,tool_context: ToolContext)->dict:
-   player_stats = tool_context.state.get["active_participants"][new_player] 
+def update_player_name(new_player: str, tool_context: ToolContext) -> dict:
+    """
+    Updates the session state to reflect the currently active player and stores their stats
+    in a dedicated key for easier prompt formatting.
+    """
+    
+    # 1. Correctly access the nested player stats from the state
+    # Get all active participants:
+    active_participants = tool_context.state.get("active_participants", {})
+    
+    # Get the specific player's class stats (hp, ac, inventory, etc.)
+    # This is the data the agent will use for Current Player Skills
+    player_stats = active_participants.get(new_player) 
+    
+    if not player_stats:
+        # Handle case where player is not found
+        return {
+            "action": "error",
+            "status": "player_not_found",
+            "message": f"Player '{new_player}' not found in active participants."
+        }
 
-   tool_context.state["player_name"][new_player] = player_stats["skill_score"] 
-   return {
-         "action": "update_player_name",
-         "status": "new player",
-         "message": f"Changing player perspective",
-      }
+    # 2. Update the main state keys
+    tool_context.state["current_player_name"] = new_player 
+    
+    # Store the STATS/SKILLS under the key the agent is looking for.
+    # We use the full player_stats dictionary since we don't have separate skill scores.
+    tool_context.state["current_player_skills"] = player_stats 
+
+    # You may also want to update the simple player_name dict to track who has acted
+    # This tracks the players that have been selected/activated at least once
+    tool_context.state["player_name"][new_player] = True 
+    
+    # 3. Return successful status
+    return {
+        "action": "update_player_name",
+        "status": "new player",
+        "message": f"Changing player perspective to {new_player}. Stats updated for the DM agent."
+    }
 
 
 # Create the root customer service agent
@@ -67,6 +126,8 @@ dungeon_master_agent = Agent(
     World Bio: {world_bio}
     Current Location: {current_location}
     Active Participants: {active_participants}
+    Current Player: {current_player_name} 
+    Current Player Skills: {current_player_skills}
     </campaign_info>
 
     **Interaction History:**

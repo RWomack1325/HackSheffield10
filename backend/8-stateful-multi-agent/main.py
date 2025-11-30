@@ -31,6 +31,11 @@ initial_state = {
                           "forest":["green","full of "]   },
     "combat_data": {},
     "player_name": {},
+    "player_name": {}, # Keep this as a general tracker
+    "current_player_name": "", # Initialize the new key
+    "current_player_skills": {}, # Initialize the new key
+
+    
     "active_participants": { # Dictionary to hold multiple PC dictionaries
         "Anya": {
             "class": "Rogue",
@@ -38,7 +43,7 @@ initial_state = {
             "ac": 14,
             "inventory": ["lockpicks", "shortsword"],
             "status": "Healthy",
-            "skill_score" : {"Passive Perception":14, "Investigation":5, "Athletics":2}
+            "skills": {"Stealth": "+7", "Perception": "+3"}, 
         },
         "Borin": {
             "class": "Cleric",
@@ -46,7 +51,7 @@ initial_state = {
             "ac": 18,
             "inventory": ["mace", "holy symbol"],
             "status": "Healthy",
-            "skill_score" : {"Passive Perception":14, "Investigation":5, "Athletics":2}
+            "skills": {"Religion": "+5", "Medicine": "+4"},
         }},
     "lore_manifest_data": [],
     "topic_of_interest": [],

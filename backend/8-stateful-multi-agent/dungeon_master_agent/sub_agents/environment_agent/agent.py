@@ -26,7 +26,7 @@ Location Features: {location_features}
 
 <player_manifest>
 Player Name: {player_name}
-Relevant Skill Score: {skill_score} 
+Relevant Skill Score: {current_player_skills} 
 (e.g., Passive Perception 14, Investigation +5, Athletics +2)
 </player_manifest>
 
