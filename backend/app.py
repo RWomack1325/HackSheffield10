@@ -1,85 +1,112 @@
-from flask import Flask
+# ---- Message Routes ----
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-from flask import jsonify
-from flask import request
 
-### Data
-
-campaign = {}
-
-messages = []
-
-characters = [
-    {
-      "id": 1,
-      "name": "Aragorn the Ranger",
-      "characterClass": "Ranger",
-      "race": "Human",
-      "level": 8,
-      "hp": 65,
-      "backstory": "Aragorn, son of Arathorn, is the heir of Isildur and rightful king of Gondor. Raised in Rivendell, he is a skilled tracker and warrior, known for his bravery and leadership in the fight against Sauron."
-    },
-    {
-      "id": 2,
-      "name": "Elara Moonwhisper",
-      "characterClass": "Wizard",
-      "race": "Elf",
-      "level": 6,
-      "hp": 32,
-      "backstory": "Elara hails from the ancient elven city of Lothlórien. A prodigy in the arcane arts, she left her homeland to explore the wider world and uncover lost magical knowledge. Her calm demeanor hides a fierce determination to protect her friends."
-    }
-]
+from database import db
+from models import Campaign, Character, Message
 
 app = Flask(__name__)
 CORS(app)
 
-@app.get("/messages")
-def get_messages():
-    return jsonify(messages)
+# -------- PostgreSQL connection --------
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:mysecretpassword@localhost:5432/postgres"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-@app.post("/messages")
-def send_messages():
-    new_message = request.json
-    new_message['id'] = len(messages) + 1
-    messages.append(new_message)
-    return jsonify(new_message), 201
+db.init_app(app)
 
-@app.get("/campaign")
-def join_campaign():
+with app.app_context():
+    db.create_all()
+# ---------------------------------------
 
-    resCampaginName = request.args.get('campaignName')
 
-    if resCampaginName != campaign.get("campaignName"):
-        return jsonify({"error": "Invalid campaign name"}), 400
-
-    return jsonify(campaign)
+# ---- Campaign Routes ----
 
 @app.post("/campaign")
 def create_campaign():
-    new_campaign = request.json
-    campaign["campaignCode"] = new_campaign["campaignCode"]
-    campaign["campaignName"] = new_campaign["campaignName"]
+    data = request.json
+    campaign = Campaign(
+        campaign_code=data["campaignCode"],
+        campaign_name=data["campaignName"]
+    )
+    db.session.add(campaign)
+    db.session.commit()
+    return jsonify(data), 201
 
-    return jsonify(new_campaign), 201
+
+@app.get("/campaign")
+def join_campaign():
+    campaign_name = request.args.get("campaignName")
+    campaign = Campaign.query.filter_by(campaign_name=campaign_name).first()
+
+    if campaign is None:
+        return jsonify({"error": "Invalid campaign name"}), 400
+
+    return jsonify({
+        "campaignName": campaign.campaign_name,
+        "campaignCode": campaign.campaign_code
+    })
+
+# ---- Character Routes ----
 
 @app.get("/character-sheets")
-def get_character_sheets():
-    return jsonify(characters)
-    
+def get_characters():
+    characters = Character.query.all()
+    return jsonify([{
+        "id": c.id,
+        "name": c.name,
+        "characterClass": c.character_class,
+        "race": c.race,
+        "level": c.level,
+        "hp": c.hp,
+        "backstory": c.backstory
+    } for c in characters])
+
+
 @app.post("/character-sheets")
-def create_character_sheet():
-    new_character = request.json
-    new_character['id'] = len(characters) + 1
-    characters.append(new_character)
-    return jsonify(new_character), 201
+def create_character():
+    data = request.json
+    c = Character(
+        name=data["name"],
+        character_class=data["characterClass"],
+        race=data["race"],
+        level=data["level"],
+        hp=data["hp"],
+        backstory=data["backstory"]
+    )
+    db.session.add(c)
+    db.session.commit()
+    return jsonify({"id": c.id, **data}), 201
 
 
-@app.put("/character-sheets/<int:char_id>")
-def update_character_sheet(char_id):
-    updated = request.json
-    for i, c in enumerate(characters):
-        if c.get('id') == char_id:
-            # update only provided fields
-            characters[i] = {**c, **updated, 'id': char_id}
-            return jsonify(characters[i]), 200
-    return jsonify({"error": "Character not found"}), 404
+# ---- Message Routes ----
+
+@app.get("/messages")
+def get_messages():
+    msgs = Message.query.order_by(Message.id.asc()).all()
+    return jsonify([{
+        "id": m.id,
+        "text": m.text,
+        "sender_id": m.sender_id,
+        "character_id": m.character_id,
+        "campaign_code": m.campaign_code,
+        "timestamp": m.timestamp.isoformat()
+    } for m in msgs])
+
+
+@app.post("/messages")
+def send_message():
+    data = request.json
+    print(data)
+    msg = Message(
+        text=data["text"],
+        sender_id=data["sender_id"],
+        character_id=data.get("character_id"),
+        campaign_code=data.get("campaign_code")
+    )
+    db.session.add(msg)
+    db.session.commit()
+    return jsonify({"id": msg.id, **data}), 201
+
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)

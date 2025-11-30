@@ -27,6 +27,7 @@ export default function Home() {
     if (!messageText || !messageText.trim()) return;
 
     try {
+      // Send user message as before
       const url = `http://${process.env.NEXT_PUBLIC_API_URL}/messages`;
       const resp = await fetch(url, {
         method: 'POST',
@@ -45,7 +46,7 @@ export default function Home() {
       setMessages((prev) => [...prev, saved]);
       setCurrentMessage('');
     } catch (err) {
-      console.error('Failed to send message', err);
+      console.error('Failed to send message or get AI response', err);
     }
   }
 
@@ -65,11 +66,12 @@ export default function Home() {
         const response = await fetch(url);
         const data = await response.json();
 
-        data.map((msg: any) => {
-          msg.sender = msg.sender_id === user?.userId ? 'user' : 'bot';
-          return msg;
-        });
-        setMessages(data);
+        const mapped = data.map((msg: any) => ({
+          ...msg,
+          sender: msg.sender_id === user?.userId ? 'user' : 'bot',
+          timestamp: msg.timestamp ? new Date(msg.timestamp) : undefined,
+        }));
+        setMessages(mapped);
       } catch (error) {
         console.error('Error fetching messages:', error);
       }

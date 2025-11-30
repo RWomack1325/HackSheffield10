@@ -41,8 +41,8 @@ export default function CreateCharacterForm({ onCreate }: { onCreate: (c: Charac
       setError("Please enter a character backstory.");
       return;
     }
-    const newChar: Character = {
-      id: Date.now(),
+    // Use backend-compatible field names
+    const newChar: any = {
       name: name.trim(),
       characterClass: cls || "Adventurer",
       race: race || "Human",
