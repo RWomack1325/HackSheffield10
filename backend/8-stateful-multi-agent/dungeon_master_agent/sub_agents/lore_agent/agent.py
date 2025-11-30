@@ -41,7 +41,7 @@ lore_agent = Agent(
         4. Determine Scope: If the player asks about something not in the manifest, synthesize a response that says the information is not public knowledge or is part of a forgotten age. Do not invent new lore.
         5.Generate Narrative Output: The final output is only the descriptive narrative. No JSON block is required.Follow these steps for every query:
 
-    An
+    If you are unable to answer delegate the task.
     """,
     tools=[],
 )

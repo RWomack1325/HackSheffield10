@@ -44,7 +44,13 @@ export default function Home() {
       if (!resp.ok) throw new Error(`Server responded ${resp.status}`);
 
       const saved = await resp.json();
-      setMessages((prev) => [...prev, saved]);
+
+      console.log('Message sent and saved:', saved);
+
+      setMessages((prev) => [...prev, {id: messages.length + 1 , text: messageText, sender: "user", timestamp: new Date()}]);
+
+      setMessages((prev) => [...prev, {id: messages.length + 1 , text: saved.text, sender: "bot", timestamp: new Date()}]);
+
       setCurrentMessage('');
     } catch (err) {
       console.error('Failed to send message or get AI response', err);

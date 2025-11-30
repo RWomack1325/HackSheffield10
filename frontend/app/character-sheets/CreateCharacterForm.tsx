@@ -9,6 +9,9 @@ interface Character {
   race: string;
   level: number;
   hp: number;
+  ac: number;
+  inventory: string[];
+  skills: Record<string, string>;
   backstory: string;
 }
 

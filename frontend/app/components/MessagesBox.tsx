@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface Message {
   id: number;
@@ -14,6 +14,12 @@ interface MessagesBoxProps {
 }
 
 export default function MessagesBox({ messages }: MessagesBoxProps) {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Scroll to bottom whenever messages change
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   return (
     <div className="flex-1 min-h-0 bg-gradient-to-br from-purple-800 to-indigo-900 rounded-lg shadow-lg p-6 overflow-y-auto border-2 border-purple-500 flex flex-col" role="region" aria-label="Message history">
@@ -35,6 +41,7 @@ export default function MessagesBox({ messages }: MessagesBoxProps) {
             <p className="font-serif text-base leading-relaxed">{message.text}</p>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
     </div>
   );

@@ -8,6 +8,8 @@ from google.adk.sessions import DatabaseSessionService
 from utils import add_user_query_to_history, call_agent_async
 import os
 
+
+
 load_dotenv()
 gemini_key = os.getenv('GEMINI_API_KEY')
 
@@ -66,7 +68,7 @@ initial_state = {
 
 async def main_async():
     # Setup constants
-    APP_NAME = "Customer Support"
+    APP_NAME = "Agentic DnD"
     USER_ID = "Hackshef10"
 
     # ===== PART 3: Session Management - Find or Create =====

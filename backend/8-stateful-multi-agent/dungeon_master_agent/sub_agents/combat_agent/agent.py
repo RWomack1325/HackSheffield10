@@ -96,6 +96,7 @@ combat_agent = Agent(
        If an NPC's HP reaches 0, their status changes to Dead.Generate 
     6. Output: Create the JSON block for the DM Manager.
     After either the player or the goblin attacks, whilst both are still alive the other responds with an attack
+    If you are unable to answer delegate the task.
     """,
     tools=[dice_roll],
     

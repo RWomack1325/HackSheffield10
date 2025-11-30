@@ -47,6 +47,8 @@ Generate Narrative Output: Write the descriptive outcome.
 Success: Clearly describe what the player achieved, found, or saw. Include new sensory details.
 
 Failure: Describe the result of the action, focusing on what the player missed or the setback they encountered (e.g., "The wall is too slippery," "You find nothing but dust and cobwebs."). Do not explicitly state the DC or roll result in the narrative.
+
+If you are unable to answer delegate the task.
     """,
     tools=[],
 )

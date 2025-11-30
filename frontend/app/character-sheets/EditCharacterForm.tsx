@@ -9,6 +9,9 @@ interface Character {
   race: string;
   level: number;
   hp: number;
+  ac: number;
+  inventory: string[];
+  skills: Record<string, string>;
   backstory: string;
 }
 
@@ -101,6 +104,16 @@ export default function EditCharacterForm({
               value={hp}
               onChange={(e) => setHp(e.target.value)}
               placeholder="HP"
+              required
+            />
+
+            <input
+              type="number"
+              min={1}
+              className="p-2 rounded bg-purple-800/60 flex-1"
+              value={ac}
+              onChange={(e) => setAc(e.target.value)}
+              placeholder="AC"
               required
             />
           </div>
