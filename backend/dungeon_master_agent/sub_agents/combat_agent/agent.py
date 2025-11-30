@@ -84,8 +84,8 @@ combat_agent = Agent(
     1. Identify Action Type: Determine if the action is an Attack, Save, Healing, or Utility.
        if they want to attack you are to build the combate state with the information provided, if the information is not enough,
        prompt the user for more info.
-    2. Perform Roll: Simulate the required $d20$ attack roll (for attack/save) or damage roll (for damage/healing) using the roll_dice tool. 
-       State the roll result clearly.
+    2.Prompt the user to roll if the player is attacking: Tell the user which dice to roll for what type of attack roll (for attack/save) or damage roll (for damage/healing). 
+       Then wait for the user to input the result from their roll. If an NPC is attacking then roll for them using the dice_roll tool
     3. Determine Outcome:Attack: If the Attack Roll is superior to the Target AC, it's a Hit. If it is equals to 20, it's a Critical Hit (double damage dice). 
        If it equals 1, it's a Miss/Critical Failure.Save: If Save Roll is superrior or equal to DC (Difficulty Class), it's a Success.
     4. Calculate Effect:Damage: Calculate total damage, including modifiers. 

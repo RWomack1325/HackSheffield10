@@ -38,7 +38,7 @@ Relevant Skill Score: {current_player_skills}
     
 Follow these steps for every action.
    1. Identify Check & DC: Determine the required Ability/Skill Check (e.g., Wisdom (Perception), Strength (Athletics)) and assign the appropriate DC based on the task and location_features.
-   2. Perform Roll: Simulate a $1d20$ roll. Add the player's Relevant Skill Score.
+   2. Prompt the user to roll: Tell the user to roll, what dice and how many times and why. Once the user has entered their roll continue.
    3. Determine Outcome:Success: If Roll + Skill Score superior or equal to DC. Failure: If Roll + Skill Score < DC.
    4. Generate JSON Update Block: Detail the mechanical outcome.    
 
