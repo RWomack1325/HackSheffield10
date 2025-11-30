@@ -134,14 +134,14 @@ async def get_dm_response(user_id, campaign_code, user_text):
     # We need to extract the text response. 
     res  = await call_agent_async(runner, campaign_code, session_id, user_text)
 
-    print("DM Agent Response:", res)
+    # print("DM Agent Response:", res)
 
     # 5. Fetch the updated state to get the DM's reply
     updated_session = await session_service.get_session(
         app_name=APP_NAME, user_id=campaign_code, session_id=session_id
     )
 
-    print("Updated Session State Retrieved.")
+    # print("Updated Session State Retrieved.")
     
     # Look at the last interaction in history to find the DM's response
     # (Adjust logic depending on exactly how 'interaction_history' is structured in your Utils)
@@ -154,7 +154,7 @@ async def get_dm_response(user_id, campaign_code, user_text):
     #     return history[-1] # Assuming the last item is the DM's response
     if res:
         return res
-    return "The Dungeon Master remains silent."
+    return {"text": "The Dungeon Master remains silent.", "image": None}
 
 
 # ==========================================
@@ -263,31 +263,36 @@ async def send_message():
     if data["sender_id"] != "DM_AI":
         try:
             # This calls the Google ADK asynchronously
-            dm_response_text = await get_dm_response(
+            dm_response = await get_dm_response(
                 user_id=data["sender_id"],
                 campaign_code=data.get("campaign_code"), 
                 user_text=custom_message
             )
+
             
-            # 3. Save DM Response to SQL DB
+            dm_response_text = dm_response.get("text", "")
+            dm_image_data = dm_response.get("image", None)
+
+            # 3. Save DM Response to SQL
             ai_msg = Message(
                 text=dm_response_text,
-                sender_id="DM_AI", # Specific ID for the bot
+                sender_id="DM_AI",
                 character_id=None,
                 campaign_code=data.get("campaign_code")
             )
             db.session.add(ai_msg)
             db.session.commit()
             
-            # Return both (or just the user's, the frontend usually polls for the AI response)
+            # 4. Return JSON with Image
             return jsonify({
-                "sender_id": "DM_AI",
-                "text": dm_response_text,                
+                "user_message_id": user_msg.id,
+                "text": dm_response_text,
+                "ai_response_image": dm_image_data # Frontend can render this
             }), 201
             
         except Exception as e:
-            print(f"Error calling DM Agent: {e}")
-            return jsonify({"error": "Failed to get DM response", "details": str(e)}), 500
+            print(f"Error: {e}")
+            return jsonify({"error": str(e)}), 500
 
     return jsonify({"id": user_msg.id, **data}), 201
 

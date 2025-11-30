@@ -51,6 +51,12 @@ export default function Home() {
 
       setMessages((prev) => [...prev, {id: messages.length + 1 , text: saved.text, sender: "bot", timestamp: new Date()}]);
 
+      // Check for base64 image in the response
+      const image = saved.ai_response_image;
+      if (image) {
+        setVisionImage(`data:image/png;base64,${image}`);
+      }
+
       setCurrentMessage('');
     } catch (err) {
       console.error('Failed to send message or get AI response', err);
@@ -58,12 +64,12 @@ export default function Home() {
   }
 
   const [currentMessage, setCurrentMessage] = useState<string>('');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [visionImage, setVisionImage] = useState<string | null>(null);
 
   const handleMessage = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setCurrentMessage(event.target.value);
   }
-
-  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
     // Fetch messages from backend API
@@ -99,8 +105,12 @@ export default function Home() {
 
               {/* Image Box */}
               <div className="w-96 bg-gradient-to-br from-purple-800 to-indigo-900 rounded-lg shadow-lg p-6 flex items-center justify-center border-2 border-purple-500" role="img" aria-label="Visual display area showing the vision of the realm">
-                <div className="w-full h-full bg-gradient-to-br from-purple-700 to-black rounded flex items-center justify-center">
-                  <p className="text-purple-300 text-lg font-serif">Vision of the Realm</p>
+                <div className="w-full h-full bg-gradient-to-br from-purple-700 to-black rounded flex items-center justify-center overflow-hidden">
+                  {visionImage ? (
+                    <img src={visionImage} alt="Vision of the Realm" className="w-full h-full object-cover rounded" />
+                  ) : (
+                    <p className="text-purple-300 text-lg font-serif">Vision of the Realm</p>
+                  )}
                 </div>
               </div>
             </div>
