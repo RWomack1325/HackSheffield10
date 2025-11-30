@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import MessagesBox from './components/MessagesBox';
+import DiceRoller from './components/DiceRoller';
 import { useUser } from './context/UserContext';
 
 interface Message {
@@ -86,15 +87,22 @@ export default function Home() {
       <main className="flex flex-col w-full h-screen p-6 gap-6" aria-label="Main chat interface">
         {/* Top section with Messages and Image side by side */}
         <div className="flex gap-6 flex-1 min-h-0" role="region" aria-label="Messages and vision display">
-          {/* Messages Component */}
-          <MessagesBox messages={messages} />
+            {/* Messages Component and Image Box grouped - Dice roller will sit to the right */}
+            <div className="flex-1 min-w-0 flex gap-6">
+              <MessagesBox messages={messages} />
 
-          {/* Image Box */}
-          <div className="flex-1 bg-gradient-to-br from-purple-800 to-indigo-900 rounded-lg shadow-lg p-6 flex items-center justify-center border-2 border-purple-500" role="img" aria-label="Visual display area showing the vision of the realm">
-            <div className="w-full h-full bg-gradient-to-br from-purple-700 to-black rounded flex items-center justify-center">
-              <p className="text-purple-300 text-lg font-serif">Vision of the Realm</p>
+              {/* Image Box */}
+              <div className="w-96 bg-gradient-to-br from-purple-800 to-indigo-900 rounded-lg shadow-lg p-6 flex items-center justify-center border-2 border-purple-500" role="img" aria-label="Visual display area showing the vision of the realm">
+                <div className="w-full h-full bg-gradient-to-br from-purple-700 to-black rounded flex items-center justify-center">
+                  <p className="text-purple-300 text-lg font-serif">Vision of the Realm</p>
+                </div>
+              </div>
             </div>
-          </div>
+
+            {/* Dice Roller (side of the two boxes) */}
+            <div className="w-72">
+              <DiceRoller />
+            </div>
         </div>
 
         {/* Bottom section with Send Message Box */}
