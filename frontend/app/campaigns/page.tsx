@@ -35,65 +35,60 @@ export default function CampaignSelection() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            campaignName,
-            campaignCode,
+          campaignName: campaignName,
+          campaignCode: campaignCode,
         }),
       });
 
       if (!resp.ok) throw new Error(`Server responded ${resp.status}`);
 
       setUser({
-      userId,
-      characterId: '', // Will be set when character is created
-      campaignName,
-      campaignCode,
-    });
+        userId,
+        characterId: '', // Will be set when character is created
+        campaignName,
+        campaignCode,
+      });
 
+      router.push('/character-sheets');
     } catch (err) {
-      console.error('Failed to send message', err);
+      setError('Failed to create campaign');
+      console.error('Failed to create campaign', err);
     }
-
-    
-
-    router.push('/character-sheets');
   };
 
   const handleJoinCampaign = async () => {
     if (!campaignName.trim()) {
-      setError('Please enter a campaign code');
+      setError('Please enter a campaign name');
       return;
     }
 
     const userId = user?.userId || generateUserId();
 
     try {
-      const url = `http://${process.env.NEXT_PUBLIC_API_URL}/campaign?campaignName=${campaignName}`;
+      const url = `http://${process.env.NEXT_PUBLIC_API_URL}/campaign?campaignName=${encodeURIComponent(campaignName)}`;
       const resp = await fetch(url, {
         method: 'GET',
       });
 
       if (!resp.ok) {
-        setError('Please enter a valid campaign name')
+        setError('Please enter a valid campaign name');
         return;
       }
 
       const resp_json = await resp.json();
 
-      // In a real app, you'd validate the campaign code with a backend
-        setUser({
+      setUser({
         userId,
         characterId: '', // Will be set when character is created
         campaignCode: resp_json.campaignCode,
         campaignName: resp_json.campaignName,
-        });
+      });
 
-        router.push('/character-sheets');
-    
+      router.push('/character-sheets');
     } catch (err) {
-        console.error('Failed to join campaign', err);
+      setError('Failed to join campaign');
+      console.error('Failed to join campaign', err);
     }
-
-    
   };
 
   return (
@@ -174,7 +169,7 @@ export default function CampaignSelection() {
               </h2>
               <input
                 type="text"
-                placeholder="Enter campaign name..."
+                placeholder="Enter campaign name to join..."
                 value={campaignName}
                 onChange={(e) => {
                   setCampaignName(e.target.value);

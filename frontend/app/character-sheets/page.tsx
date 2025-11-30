@@ -62,26 +62,24 @@ export default function CharacterSheets() {
 
         {/* Create form toggle and form */}
         <CreateCharacterForm onCreate={async (newChar) => {
+          const url = `http://${process.env.NEXT_PUBLIC_API_URL}/character-sheets`;
+          const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: newChar.name,
+              characterClass: newChar.characterClass,
+              race: newChar.race,
+              level: newChar.level,
+              hp: newChar.hp,
+              backstory: newChar.backstory
+            }),
+          });
 
-            const url = `http://${process.env.NEXT_PUBLIC_API_URL}/character-sheets`;
-            const resp = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: newChar.name,
-                    characterClass: newChar.characterClass,
-                    race: newChar.race,
-                    level: newChar.level,
-                    hp: newChar.hp,
-                    backstory: newChar.backstory
-                    }),
-            });
+          if (!resp.ok) throw new Error(`Server responded ${resp.status}`);
 
-        if (!resp.ok) throw new Error(`Server responded ${resp.status}`);
-
-        const saved = await resp.json();
+          const saved = await resp.json();
           setCharacters((prev) => [saved, ...prev]);
-
 
           // automatically select the newly created character
           setUserPartial({ characterId: String(saved.id), characterName: saved.name });
@@ -171,7 +169,14 @@ export default function CharacterSheets() {
             const resp = await fetch(url, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(updated),
+              body: JSON.stringify({
+                name: updated.name,
+                characterClass: updated.characterClass,
+                race: updated.race,
+                level: updated.level,
+                hp: updated.hp,
+                backstory: updated.backstory
+              }),
             });
 
             if (!resp.ok) throw new Error(`Server responded ${resp.status}`);

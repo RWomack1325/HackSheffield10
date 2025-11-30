@@ -13,9 +13,9 @@ gemini_key = os.getenv('GEMINI_API_KEY')
 
 
 
-# ===== PART 1: Initialize In-Memory Session Service =====
-# Using in-memory storage for this example (non-persistent)
-db_url = "postgresql+asyncpg://postgres:mysecretpassword@localhost:5432/postgres"
+# ===== PART 1: Initialize Database Session Service =====
+# Use the same credentials and database as the main backend
+db_url = "postgresql+asyncpg://postgres:password@localhost:5433/dnd"
 session_service = DatabaseSessionService(db_url=db_url)
 
 

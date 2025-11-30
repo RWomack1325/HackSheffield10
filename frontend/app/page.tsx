@@ -65,11 +65,12 @@ export default function Home() {
         const response = await fetch(url);
         const data = await response.json();
 
-        data.map((msg: any) => {
-          msg.sender = msg.sender_id === user?.userId ? 'user' : 'bot';
-          return msg;
-        });
-        setMessages(data);
+        const mapped = data.map((msg: any) => ({
+          ...msg,
+          sender: msg.sender_id === user?.userId ? 'user' : 'bot',
+          timestamp: msg.timestamp ? new Date(msg.timestamp) : undefined,
+        }));
+        setMessages(mapped);
       } catch (error) {
         console.error('Error fetching messages:', error);
       }
