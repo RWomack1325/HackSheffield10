@@ -69,7 +69,7 @@ combat_agent = Agent(
     Target: {target_name}
     </combat_state>
 
-    <active_participants_manifes>
+    <active_participants_manifest>
     {active_participants} 
     (Includes all stats: HP, AC, Abilities, Attack Bonus, Damage Dice, Status Effects)
     </active_participants_manifest>
