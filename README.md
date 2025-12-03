@@ -17,5 +17,8 @@ Backend:
 APIs:
 - Google Gemini
 
+Other tools:
+- VSCode Live Share
+
 # Devpost link
 https://devpost.com/software/dnd-companion-y35lbm
