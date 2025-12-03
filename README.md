@@ -14,6 +14,7 @@ Backend:
 - Python
 - PostgreSql
 - Flask
+
 APIs:
 - Google Gemini
 
