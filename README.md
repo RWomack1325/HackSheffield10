@@ -9,6 +9,7 @@ This project was made during HackSheffield10, where it won Best Newcomer Project
 Frontend:
 - React
 - Next.js
+
 Backend:
 - Python
 - PostgreSql
